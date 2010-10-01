@@ -43,7 +43,7 @@ PHP_METHOD(immutable, __construct)
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "a", &params) == FAILURE) {
 		return;
 	}
-	
+
 	std_hnd = zend_get_std_object_handlers();
 	
 	for (zend_hash_internal_pointer_reset(Z_ARRVAL_P(params));
@@ -93,7 +93,7 @@ static zend_object_value php_immutable_object_new(zend_class_entry *class_type T
 	/* Allocate memory for it */
 	intern = (php_immutable_object *) emalloc(sizeof(php_immutable_object));
 	memset(&intern->zo, 0, sizeof(zend_object));
-	
+
 	zend_hash_init(&(intern->properties), 5, NULL, (void (*)(void *)) php_immutable_free_prop, 0);
 
 	zend_object_std_init(&intern->zo, class_type TSRMLS_CC);
@@ -109,7 +109,7 @@ PHP_MINFO_FUNCTION(immutable)
 }
 
 static function_entry php_immutable_class_methods[] = {
-	PHP_ME(immutable, __construct,			NULL,			ZEND_ACC_PUBLIC|ZEND_ACC_CTOR|ZEND_ACC_FINAL)
+	PHP_ME(immutable, __construct,			NULL,			ZEND_ACC_PUBLIC|ZEND_ACC_CTOR|ZEND_ACC_FINAL)	
 	{NULL, NULL, NULL}
 };
 
@@ -118,7 +118,7 @@ static zval **php_immutable_get_property_ptr_ptr(zval *object, zval *member TSRM
 	zval **retval, **prop_ptr_ptr;
 	php_immutable_object *intern;
 	zend_object_handlers *std_hnd;
-	
+
 	intern = (php_immutable_object *) zend_objects_get_address(object TSRMLS_CC);
 
 	/* Get the property */
@@ -130,7 +130,7 @@ static zval **php_immutable_get_property_ptr_ptr(zval *object, zval *member TSRM
 	MAKE_STD_ZVAL((*prop_ptr_ptr));
 	ZVAL_ZVAL((*prop_ptr_ptr), (*retval), 1, 0);
 
-	zend_hash_add(&(intern->properties), Z_STRVAL_P(member), Z_STRLEN_P(member) + 1, (void *) &prop_ptr_ptr, sizeof(zval ***), NULL);
+	zend_hash_next_index_insert(&(intern->properties), (void *) &prop_ptr_ptr, sizeof(zval ***), NULL);
 	return prop_ptr_ptr;
 }
 
@@ -149,7 +149,7 @@ PHP_MINIT_FUNCTION(immutable)
 	ce.create_object = php_immutable_object_new;
 	php_immutable_object_handlers.clone_obj = NULL;
 
-	php_immutable_object_handlers.write_property = php_immutable_write_property;
+	php_immutable_object_handlers.write_property       = php_immutable_write_property;
 	php_immutable_object_handlers.get_property_ptr_ptr = php_immutable_get_property_ptr_ptr;
 	
 	php_immutable_sc_entry = zend_register_internal_class(&ce TSRMLS_CC);

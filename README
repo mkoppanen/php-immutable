@@ -1,0 +1,3 @@
+Immutable object for PHP
+
+After construction the properties are read-only and can not be modified.
