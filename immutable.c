@@ -36,11 +36,15 @@ static zend_object_handlers php_immutable_object_handlers;
 
 PHP_METHOD(immutable, __construct) 
 {
-	zval *params, **ppzval;
+	zval *params = NULL, **ppzval;
 	zend_object_handlers *std_hnd;
 	php_immutable_object *intern;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "a", &params) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|a!", &params) == FAILURE) {
+		return;
+	}
+
+	if (!params) {
 		return;
 	}
 
@@ -109,7 +113,7 @@ PHP_MINFO_FUNCTION(immutable)
 }
 
 static function_entry php_immutable_class_methods[] = {
-	PHP_ME(immutable, __construct,			NULL,			ZEND_ACC_PUBLIC|ZEND_ACC_CTOR|ZEND_ACC_FINAL)	
+	PHP_ME(immutable, __construct,			NULL,			ZEND_ACC_PUBLIC|ZEND_ACC_CTOR|ZEND_ACC_FINAL)
 	{NULL, NULL, NULL}
 };
 
@@ -136,7 +140,12 @@ static zval **php_immutable_get_property_ptr_ptr(zval *object, zval *member TSRM
 
 static void php_immutable_write_property(zval *object, zval *member, zval *value TSRMLS_DC) 
 {
-	/* noop */
+	zend_object_handlers *std_hnd = zend_get_std_object_handlers();
+
+	if (std_hnd->has_property(object, member, 2 TSRMLS_CC)) {
+		return;
+	}
+	std_hnd->write_property(object, member, value TSRMLS_CC);
 }
 
 PHP_MINIT_FUNCTION(immutable)
